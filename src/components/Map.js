@@ -7,8 +7,12 @@ import VectorSource from 'ol/source/Vector';
 import {Fill, Stroke, Style, Text} from 'ol/style';
 import MapSource from './../resources/geojson/countries.geojson'
 
+import MapControls from './MapControls';
+
 function Map({center, zoom}) {
+
     console.log(zoom);
+    
     var style = new Style({
         fill: new Fill({
         color: 'rgba(255, 255, 255, 0.6)'
@@ -28,7 +32,7 @@ function Map({center, zoom}) {
         })
         })
     });
-
+    
     var vectorLayer = new VectorLayer({
         source: new VectorSource({
         url: MapSource,
@@ -39,18 +43,20 @@ function Map({center, zoom}) {
         return style;
         }
     });
-
-    var map = new OlMap({
+    
+    const map = new OlMap({
         target: null,
+        controls: [],
         layers: [vectorLayer],
         view: new View({
-        center: center,
-        zoom: zoom
+          center: center,
+          zoom: zoom
         })
     });
     
     useEffect(() => {
         console.log("useEffect");
+        console.log("map zoom: " + map.getView().getZoom());
         map.setTarget("map");
     });
 
@@ -58,6 +64,7 @@ function Map({center, zoom}) {
         <React.Fragment>
             <div id="map" className="map">
             </div>
+            <MapControls map={map} />
         </React.Fragment>
     );
 }

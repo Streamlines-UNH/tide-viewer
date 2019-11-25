@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import ZoomSlider from 'ol/control/ZoomSlider';
+import Zoom from 'ol/control/Zoom';
 
-export function MapControls({handleZoomIn}) {
+export function MapControls({map}) {
+    useEffect(() => {
+        map.addControl(ZoomControls);
+        map.addControl(ZoomSliders);
+    });
+
+    const ZoomSliders = new ZoomSlider({
+       vertical: 1,
+       horizontal: 0,
+    });
+
+    const ZoomControls = new Zoom({
+
+    });
+
     return (
         <div id="map-controls">
-            <button id="zoom-in" type="button" onClick={handleZoomIn}>Zoom In </button>
+            <p>test</p>
         </div>
     );
 }
