@@ -1,8 +1,10 @@
 import React from 'react';
 
-export function MapControls(props) {
+export function MapControls({handleZoomIn}) {
     return (
-        <p>MapControls test</p>
+        <div id="map-controls">
+            <button id="zoom-in" type="button" onClick={handleZoomIn}>Zoom In </button>
+        </div>
     );
 }
 
