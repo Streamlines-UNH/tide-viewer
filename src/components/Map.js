@@ -48,10 +48,10 @@ function Map({center, zoom}) {
         loader: function(extend, resolution, projection) {
             var proj = projection.getCode();
             var url = 'https://9fv6uekm86.execute-api.us-east-1.amazonaws.com/prod'
-            var xhr = new XHLHttpRequest();
-        xhr.open('GET', url);
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
         }
-    )};
+    });
     const map = new OlMap({
         target: null,
         controls: [],
