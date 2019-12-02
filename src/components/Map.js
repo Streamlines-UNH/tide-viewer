@@ -43,7 +43,15 @@ function Map({center, zoom}) {
         return style;
         }
     });
-    
+    var streamlinelayer = new VectorLayer({
+        format: new GeoJSON(),
+        loader: function(extend, resolution, projection) {
+            var proj = projection.getCode();
+            var url = 'https://9fv6uekm86.execute-api.us-east-1.amazonaws.com/prod'
+            var xhr = new XHLHttpRequest();
+        xhr.open('GET', url);
+        }
+    )};
     const map = new OlMap({
         target: null,
         controls: [],
