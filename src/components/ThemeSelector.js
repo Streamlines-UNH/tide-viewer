@@ -2,7 +2,9 @@ import React from 'react';
 
 export function ThemeSelector(props) {
     return (
-        <p>ThemeSelector test</p>
+        <div id="theme-selector">
+            <p>ThemeSelector test</p>
+        </div>
     );
 }
 

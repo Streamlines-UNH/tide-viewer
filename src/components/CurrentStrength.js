@@ -2,7 +2,9 @@ import React from 'react';
 
 export function CurrentStrength(props) {
     return (
-        <p>CurrentStrength test</p>
+        <div id="current-strength">
+            <p>CurrentStrength test</p>
+        </div>
     );
 }
 
