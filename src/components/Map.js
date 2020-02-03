@@ -4,13 +4,13 @@ import View from 'ol/View';
 import GeoJSON from 'ol/format/GeoJSON';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
+import VectorTileLayer from 'ol/layer/VectorTile';
+import VectorTileSource from 'ol/source/VectorTile';
 import {Fill, Stroke, Style, Text} from 'ol/style';
 import MapSource from './../resources/geojson/countries.geojson';
 import MVT from 'ol/format/MVT';
-
 import MapControls from './MapControls';
 import axios from 'axios';
-import MVTSource from './../resources/1571.pbf';
 
 function Map({center, zoom}) {
 
@@ -42,7 +42,7 @@ function Map({center, zoom}) {
         try {
             const response = await axios.get('https://9fv6uekm86.execute-api.us-east-1.amazonaws.com/prod/streamlines');
             console.log('here');
-            //console.log(atob(response.data.body));
+            console.log(atob(response.data.body));
             return atob(response.data.body);
         } catch (error) {
 
@@ -61,35 +61,21 @@ function Map({center, zoom}) {
         }
     });
 
-    const streamlines = getStreamlines().then()
+    // const streamlines = getStreamlines().then()
 
     /*var chicago = new VectorLayer({
         source: new VectorSource({
             url: MVTSource,
             format: new MVT()
-        }),
-        style: function(feature) {
-            style.getText().setText(feature.get('name'));
-            return style;
-        }
+        })
     })*/
 
-    var test = new VectorLayer({
-        source: new VectorSource({
-            url: 'localhost:8080/services/CBOFS',
-            format: new MVT()
-        }),
+    var test = new VectorTileLayer({
+        source: new VectorTileSource({
+            format: new MVT(),
+            url: 'http://localhost:8000/services/CBOFS/tiles/{z}/{x}/{y}.pbf'
+        })
     })
-
-    /*var streamlinelayer = new VectorLayer({
-        format: new GeoJSON(),
-        loader: function(extend, resolution, projection) {
-            var proj = projection.getCode();
-            var url = 'https://9fv6uekm86.execute-api.us-east-1.amazonaws.com/prod/streamlines'
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', url);
-        }
-    });*/
 
     const map = new OlMap({
         target: null,
