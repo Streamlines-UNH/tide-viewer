@@ -76,7 +76,7 @@ function Map({center, zoom}) {
 
     var test = new VectorLayer({
         source: new VectorSource({
-            url: MVTSource,
+            url: 'localhost:8080/services/CBOFS',
             format: new MVT()
         }),
     })
