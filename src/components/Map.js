@@ -1,66 +1,37 @@
 import React, { useEffect } from 'react';
 import OlMap from 'ol/Map';
 import View from 'ol/View';
-import GeoJSON from 'ol/format/GeoJSON';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import {Fill, Stroke, Style, Text} from 'ol/style';
-import MapSource from './../resources/geojson/countries.geojson'
-
+import VectorTileLayer from 'ol/layer/VectorTile';
+import VectorTileSource from 'ol/source/VectorTile';
+import MVT from 'ol/format/MVT';
 import MapControls from './MapControls';
+import * as olProj from 'ol/proj';
+import olms from 'ol-mapbox-style';
+import MapStyle from '../resources/MapStyle.json';
 
 function Map({center, zoom}) {
 
     console.log(zoom);
-    
-    var style = new Style({
-        fill: new Fill({
-        color: 'rgba(255, 255, 255, 0.6)'
-        }),
-        stroke: new Stroke({
-        color: '#319FD3',
-        width: 1
-        }),
-        text: new Text({
-        font: '12px Calibri,sans-serif',
-        fill: new Fill({
-            color: '#000'
-        }),
-        stroke: new Stroke({
-            color: '#fff',
-            width: 3
+
+    var streamlines = new VectorTileLayer({
+        source: new VectorTileSource({
+            format: new MVT(),
+            url: 'http://localhost:7777/services/CBOFS/tiles/{z}/{x}/{y}.pbf'
         })
-        })
-    });
-    
-    var vectorLayer = new VectorLayer({
-        source: new VectorSource({
-        url: MapSource,
-        format: new GeoJSON()
-        }),
-        style: function(feature) {
-        style.getText().setText(feature.get('name'));
-        return style;
-        }
-    });
-    var streamlinelayer = new VectorLayer({
-        format: new GeoJSON(),
-        loader: function(extend, resolution, projection) {
-            var proj = projection.getCode();
-            var url = 'https://9fv6uekm86.execute-api.us-east-1.amazonaws.com/prod'
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', url);
-        }
-    });
+    })
+
     const map = new OlMap({
         target: null,
-        controls: [],
-        layers: [vectorLayer],
+        controls: [streamlines],
+        layers: [streamlines],
         view: new View({
-          center: center,
-          zoom: zoom
+            constrainResolution: true,
+            center: olProj.fromLonLat([-62.63922, 38.76539]),
+            zoom: 5
         })
     });
+
+    olms(map, MapStyle);
     
     useEffect(() => {
         console.log("useEffect");
