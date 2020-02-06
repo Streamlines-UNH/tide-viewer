@@ -16,7 +16,7 @@ function Map({center, zoom}) {
     var streamlines = new VectorTileLayer({
         source: new VectorTileSource({
             format: new MVT(),
-            url: 'http://localhost:7777/services/CBOFS/tiles/{z}/{x}/{y}.pbf'
+            url: 'https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/1/{z}/{x}/{y}.mvt'
         })
     })
 
@@ -26,13 +26,13 @@ function Map({center, zoom}) {
         layers: [streamlines],
         view: new View({
             constrainResolution: true,
-            center: olProj.fromLonLat([-62.63922, 38.76539]),
-            zoom: 5
+            center: olProj.fromLonLat([-75.5, 37.5]),
+            zoom: 8
         })
     });
 
     olms(map, MapStyle);
-    
+
     useEffect(() => {
         console.log("useEffect");
         console.log("map zoom: " + map.getView().getZoom());
