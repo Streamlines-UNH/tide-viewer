@@ -1,0 +1,39 @@
+#map-controls {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 20;
+}
+
+
+.ol-zoomslider {
+    top: 8px;
+    left: auto;
+    right: 8px;
+    background-color: rgba(255,69,0,0.2);
+    width: 200px;
+    height: 15px;
+    padding: 0;
+    box-shadow: 0 0 5px rgb(255,69,0);
+    border-radius: 20px;
+
+    &:hover {
+        background-color: rgba(255,69,0,0.3);
+    }
+  }
+
+ .ol-zoomslider:hover {
+    
+  }
+
+.ol-zoomslider-thumb {
+    height: 15px;
+    width: 15px;
+    margin: 0;
+    filter: none;
+    background-color: rgba(255,69,0,0.6);
+    border-radius: 20px;
+}
+a.ol-zoomslider-handle:hover {
+    background-color: rgba(255,69,0,0.7);
+}
