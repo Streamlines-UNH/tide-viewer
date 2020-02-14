@@ -4,14 +4,15 @@ import View from 'ol/View';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import VectorTileSource from 'ol/source/VectorTile';
 import MVT from 'ol/format/MVT';
-import MapControls from './MapControls';
 import * as olProj from 'ol/proj';
 import olms from 'ol-mapbox-style';
 import MapStyle from '../resources/MapStyle.json';
+import Zoom from 'ol/control/Zoom';
 
-function Map({center, zoom}) {
-
-    console.log(zoom);
+function Map() { 
+     const ZoomControls = new Zoom({
+ 
+     });
 
     var streamlines = new VectorTileLayer({
         source: new VectorTileSource({
@@ -34,16 +35,13 @@ function Map({center, zoom}) {
     olms(map, MapStyle);
 
     useEffect(() => {
-        console.log("useEffect");
-        console.log("map zoom: " + map.getView().getZoom());
+        map.addControl(ZoomControls);
         map.setTarget("map");
     });
 
     return (
         <React.Fragment>
-            <div id="map" className="map">
-            </div>
-            <MapControls map={map} />
+            <div id="map" className="map"></div>
         </React.Fragment>
     );
 }
