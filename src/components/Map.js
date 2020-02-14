@@ -26,10 +26,11 @@ function Map({ center, zoom }) {
 		this.ix = 0;
 		this.iy = 0;
 		this.age = 0;
-		this.life = 40;
+		this.life = 20;
 		this.size = 0;
 		this.depth = 0;
 		this.vy = 0;
+		this.vx = 0;
 	}
 	Particle.prototype = {
 		constructor: Particle,
@@ -41,6 +42,7 @@ function Map({ center, zoom }) {
 			} else {
 				this.age += 1
 				this.y += this.vy
+				this.x += this.vx
 			}
 		}
 	};
@@ -70,8 +72,8 @@ function Map({ center, zoom }) {
 				particle.y = c[1]
 				particle.ix = particle.x;
 				particle.iy = particle.y;
-				particle.depth = (Math.random() * 10) | 0;
-				particle.vy = 0;
+				particle.vy = 0.1
+				particle.vx = 0.1
 				particles.push(particle);
 			}
 		}
@@ -147,6 +149,7 @@ function Map({ center, zoom }) {
 		render=false
 	})
 	map.on("moveend", function(event){
+		canvasLayer.getSource().refresh()
 		render=true
 	})
 	// hacky fps
@@ -157,7 +160,6 @@ function Map({ center, zoom }) {
 		<React.Fragment>
 		<div id="map" className="map" />
 		<MapControls map={map} />
-		<script src="particles.js" />
 		</React.Fragment>
 	);
 }
