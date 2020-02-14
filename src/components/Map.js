@@ -40,7 +40,7 @@ function Map({ center, zoom }) {
 				this.age = 0
 			} else {
 				this.age += 1
-				this.y += 0.1
+				this.y += this.vy
 			}
 		}
 	};
@@ -56,21 +56,25 @@ function Map({ center, zoom }) {
 			}
 		);
 	})();
-	for (var i = 0; i < 20000; i++) {
-		var particle = new Particle();
-		particle.x = -180+360*random();
-		particle.y = -90+180*random()
-		particle.ix = particle.x;
-		particle.iy = particle.y;
-		particle.depth = (Math.random() * 10) | 0;
-		particle.vy = particle.depth * 0.25 + 1 / Math.random();
-		particles.push(particle);
-	}
 	var streamlines = new VectorTileLayer({
 		source: new VectorTileSource({
 			format: new MVT(),
-			url: "http://localhost:8000/services/out/tiles/{z}/{x}/{y}.pbf"
-		})
+			url: "http://localhost:8000/services/CBOFS/tiles/{z}/{x}/{y}.pbf"
+		}),
+		style: function(feature) {
+			var cords = feature.getFlatCoordinates()
+			for (var i = 0; i < cords.length; i += 2) {
+				var particle = new Particle();
+				var c = olProj.transform([cords[i],cords[i+1]], 'EPSG:3857', 'EPSG:4326');
+				particle.x = c[0]
+				particle.y = c[1]
+				particle.ix = particle.x;
+				particle.iy = particle.y;
+				particle.depth = (Math.random() * 10) | 0;
+				particle.vy = 0;
+				particles.push(particle);
+			}
+		}
 	});
 	const map = new OlMap({
 		target: null,
@@ -97,6 +101,8 @@ function Map({ center, zoom }) {
 		var mapOrigin = map.getPixelFromCoordinate([mapExtent[0], mapExtent[3]]);
 		var delta = [mapOrigin[0]-canvasOrigin[0], mapOrigin[1]-canvasOrigin[1]]
 		var p, point, pixel, cX, cY;
+		context.fillStyle = "#0000FF";
+
 
 		function animate() {
 			//console.log(0)
@@ -109,7 +115,7 @@ function Map({ center, zoom }) {
 					pixel = map.getPixelFromCoordinate(point);
 					cX = pixel[0] + delta[0]
 					cY = pixel[1] + delta[1]
-					context.fillRect(cX,cY,1,1)
+					context.fillRect(cX,cY,2,2)
 					p.update()
 				}
 				map.render()
