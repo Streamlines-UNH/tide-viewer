@@ -5,19 +5,17 @@ import VectorTileLayer from "ol/layer/VectorTile";
 import {Image} from "ol/layer";
 import VectorTileSource from "ol/source/VectorTile";
 import MVT from "ol/format/MVT";
-import MapControls from "./MapControls";
 import * as olProj from "ol/proj";
 import olms from "ol-mapbox-style";
 import ImageCanvas from "ol/source/ImageCanvas"
 import MapStyle from "../resources/MapStyle.json";
+import Zoom from 'ol/control/Zoom';
 
 
-function Map({ center, zoom }) {
-	var seed = 2;
-	function random() {
-		var x = Math.sin(seed++) * 10000;
-		return x - Math.floor(x);
-	}
+
+function Map() {
+	const ZoomControls = new Zoom({
+	});
 
 	var particles = []
 	function Particle() {
@@ -31,6 +29,7 @@ function Map({ center, zoom }) {
 		this.depth = 0;
 		this.vy = 0;
 		this.vx = 0;
+		this.fill = "#0000FF";
 	}
 	Particle.prototype = {
 		constructor: Particle,
@@ -58,29 +57,50 @@ function Map({ center, zoom }) {
 			}
 		);
 	})();
+	var color1 = [255, 0, 0]
+	var color2 = [0, 255, 0]
+	function pickHex(weight) {
+		var w1 = weight;
+		var w2 = 1 - w1;
+		var rgb = [Math.round(color1[0] * w1 + color2[0] * w2),
+			Math.round(color1[1] * w1 + color2[1] * w2),
+			Math.round(color1[2] * w1 + color2[2] * w2)];
+		return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);;
+	}
+	var map
 	var streamlines = new VectorTileLayer({
 		source: new VectorTileSource({
 			format: new MVT(),
-			url: "http://localhost:8000/services/CBOFS/tiles/{z}/{x}/{y}.pbf"
+			url: "http://localhost:8000/services/TEST/tiles/{z}/{x}/{y}.pbf"
 		}),
 		style: function(feature) {
+			if (map.getView().getZoom() !== 8) {
+				return
+			}
 			var cords = feature.getFlatCoordinates()
-			for (var i = 0; i < cords.length; i += 2) {
+			for (var i = 0; i < cords.length; i += 1) {
 				var particle = new Particle();
 				var c = olProj.transform([cords[i],cords[i+1]], 'EPSG:3857', 'EPSG:4326');
+
+				var mag = feature.getProperties()["mag"]
+				var dir = feature.getProperties()["dir"]
+				var dist = feature.getProperties()["dist"]
+
 				particle.x = c[0]
 				particle.y = c[1]
 				particle.ix = particle.x;
 				particle.iy = particle.y;
-				particle.vy = 0.1
-				particle.vx = 0.1
+				particle.vy = dist * Math.sin(dir) * 0.05
+				particle.vx = dist * Math.cos(dir) * 0.05
+				particle.life = 20
+				particle.fill = pickHex(mag);
 				particles.push(particle);
 			}
 		}
 	});
-	const map = new OlMap({
+	map = new OlMap({
 		target: null,
-		controls: [streamlines],
+		controls: [],
 		layers: [streamlines],
 		view: new View({
 			constrainResolution: true,
@@ -114,10 +134,11 @@ function Map({ center, zoom }) {
 					context.beginPath()
 					p = particles[i];
 					point = olProj.transform([p.x, p.y], 'EPSG:4326', 'EPSG:3857');
+					context.fillStyle = p.fill
 					pixel = map.getPixelFromCoordinate(point);
 					cX = pixel[0] + delta[0]
 					cY = pixel[1] + delta[1]
-					context.fillRect(cX,cY,2,2)
+					context.fillRect(cX,cY,3,3)
 					p.update()
 				}
 				map.render()
@@ -127,13 +148,10 @@ function Map({ center, zoom }) {
 		return canvas;
 
 	}
-	console.log(zoom);
-
 	olms(map, MapStyle);
 
 	useEffect(() => {
-		console.log("useEffect");
-		console.log("map zoom: " + map.getView().getZoom());
+		map.addControl(ZoomControls);
 		map.setTarget("map");
 	});
 	var s1 = new ImageCanvas({
@@ -159,7 +177,6 @@ function Map({ center, zoom }) {
 	return (
 		<React.Fragment>
 		<div id="map" className="map" />
-		<MapControls map={map} />
 		</React.Fragment>
 	);
 }
