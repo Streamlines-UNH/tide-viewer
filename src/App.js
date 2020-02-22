@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 
 import CurrentStrength from './components/CurrentStrength';
-import Map from './components/Map';
+import CurrentMap from './components/Map';
 import RegionSelection from './components/RegionSelection';
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
   return (
     <div className="App">
       <CurrentStrength />
-      <Map regions={regions} /> 
+      <CurrentMap regions={regions} /> 
       <RegionSelection regionSelectionCallBack={regionSelectionCallBack} />
     </div>
   );
