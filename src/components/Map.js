@@ -4,7 +4,7 @@ import GetTile from './../Utils'
 import StreamlinesGL from './../render/StreamlinesWebGL'
 
 
-function CurrentMap() { 
+function CurrentMap() {
 	const mapRef = useRef();
 	useEffect(
 		() => {
@@ -51,7 +51,7 @@ function CurrentMap() {
 						var view = new MapView({
 							container: "viewDiv",
 							map: map,
-							center: [-76, 37.1],
+							center: [-75.5, 37.3],
 							zoom: 9
 						});
 
@@ -68,12 +68,13 @@ function CurrentMap() {
 							return rgb;
 						}
 						openLayer.fetchTile = function(z, r, c, op) {
-						var url = `https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/1/${z}/${c}/${r}`
+							var url = `https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/9/${z}/${c}/${r}`
+							//var url = `http://localhost:8000/services/CBOFS/tiles/${z}/${c}/${r}`
 							GetTile({
-							uri: url,
-							z: z,
-							x: c,
-							y: r
+								uri: url,
+								z: z,
+								x: c,
+								y: r
 							}, function (err, result) {
 								if (err) return;
 								var t = result.features.map(function(trip) {
