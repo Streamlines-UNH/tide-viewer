@@ -4,8 +4,35 @@ import GetTile from './../Utils'
 import StreamlinesGL from './../render/StreamlinesWebGL'
 
 
-function CurrentMap() {
+function CurrentMap(props) {
 	const mapRef = useRef();
+	// define the default view
+	var baseURL = useRef("https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/1")
+	// save data to this ref to access it between effects
+	var updateRef = useRef(null)
+
+	//
+	function refresh_function(level) {
+		return function() {
+			for (const key of Object.keys(updateRef.current.zxyGraphics)) {
+				if (key.startsWith(`${level}`)){
+					var c = key.split("/")[1]
+					var r = key.split("/")[2]
+					var url = `${baseURL.current}/${level}/${c}/${r}`
+					GetTile({
+						uri: url,
+						z: level,
+						x: c,
+						y: r
+					}, updateRef.current.fetch(level, r, c));
+				}
+			}
+		}
+	}
+
+	// 2 use effects; first is loaded on initial render
+	// second is called when the group slider is changed
+	// we could re-render the entire Map but 
 	useEffect(
 		() => {
 			// lazy load the required ArcGIS API for JavaScript modules
@@ -31,7 +58,7 @@ function CurrentMap() {
 
 						// Subclass the layer view from GraphicsLayer, to take advantage of its
 						// watchable graphics property.
-						var CustomLayer = GraphicsLayer.createSubclass({
+						var StreamlinesLayer = GraphicsLayer.createSubclass({
 							createLayerView: function(view) {
 								if (view.type === "2d") {
 									return new CustomLayerView2D({
@@ -41,44 +68,43 @@ function CurrentMap() {
 								}
 							}
 						});
-
-						var map = new Map();
+						updateRef.current = {baseURL: "", zxyGraphics: {}, view: null, fetch: null, timer: null}
+						var map = new Map()
+						var slLayer = new StreamlinesLayer()
 
 						var openLayer = new OpenStreetMapLayer()
 						// copy the function that is called when a tile enters view
 						openLayer.realFetchTile = openLayer.fetchTile
 						// save the tile data at each zxy
-						var zxyGraphics = {}
 						var graphicsTimer;
 						map.layers.add(openLayer);
 
 						// Define the mapview
-						var view = new MapView({
+						updateRef.current.view = new MapView({
 							container: "viewDiv",
 							map: map,
 							center: [-75.5, 37.3],
 							zoom: 9
 						});
 
-						var Streamlineslayer = new CustomLayer({});
-						map.layers.add(Streamlineslayer);
+						map.layers.add(slLayer);
 
 						// callback function that will reset the layer on zoom/pan
-						function redraw_geometry(z) {
+						function redraw(z) {
 							return function(){
 								var g = []
-								for (const key of Object.keys(zxyGraphics)) {
+								for (const key of Object.keys(updateRef.current.zxyGraphics)) {
 									if (key.startsWith(`${z}`)){
-										for (var i = 0; i < zxyGraphics[key].length; i++){
-											g.push(zxyGraphics[key][i])
+										for (var i = 0; i < updateRef.current.zxyGraphics[key].length; i++){
+											g.push(updateRef.current.zxyGraphics[key][i])
 										}
 									}
 								}
-								map.layers.remove(Streamlineslayer)
-								Streamlineslayer = new CustomLayer({
+								map.layers.remove(slLayer)
+								slLayer = new StreamlinesLayer({
 									graphics: g
 								});
-								map.layers.add(Streamlineslayer)
+								map.layers.add(slLayer)
 							}
 						}
 
@@ -93,21 +119,11 @@ function CurrentMap() {
 								Math.round(color1[2] * w1 + color2[2] * w2)];
 							return rgb;
 						}
-						// arcgis will call this function when a tile comes into view
-						// so we can hijack that call and get the tiles from our API
-						// then return the saved function from earlier
-						openLayer.fetchTile = function(z, r, c, op) {
-							var url = `https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/9/${z}/${c}/${r}`
-							//var url = `http://localhost:8000/services/CBOFS/tiles/${z}/${c}/${r}`
-							GetTile({
-								uri: url,
-								z: z,
-								x: c,
-								y: r
-							}, function (err, result) {
+						updateRef.current.fetch = function(z, r, c) {
+							return function(err, result) {
 								if (err) return;
 								// modify the geojson to something the renderer can use
-								zxyGraphics[`${z}/${c}/${r}`] = result.features.map(function(trip) {
+								updateRef.current.zxyGraphics[`${z}/${c}/${r}`] = result.features.map(function(trip) {
 									// remap the magnitudes to a color value between color1 and color2
 									var mags = trip.properties.magnitudes.substring(1, trip.properties.length)
 										.split(',').map(parseFloat)
@@ -125,27 +141,51 @@ function CurrentMap() {
 											}
 										})
 									};
-								});
-
+								})
 								// after we are done fetching new tiles recompute the graphics layer
 								clearTimeout(graphicsTimer)
-								graphicsTimer = setTimeout(redraw_geometry(z), 200)
-							});
+								graphicsTimer = setTimeout(redraw(z), 200)
+							}
+						}
+						// arcgis will call this function when a tile comes into view
+						// so we can hijack that call and get the tiles from our API
+						// then return the saved function from earlier
+
+						openLayer.fetchTile = function(z, r, c, op) {
+							var url = `${baseURL.current}/${z}/${c}/${r}`
+							GetTile({
+								uri: url,
+								z: z,
+								x: c,
+								y: r
+							}, updateRef.current.fetch(z, r, c));
 							return openLayer.realFetchTile(z, r, c, op)
 						}
 
 						// return a deconstructor
 						return () => {
-							if (view) {
-								view.container = null;
+							if (updateRef.current.view) {
+								updateRef.current.view.container = null;
 							}
 						};
 					});
-		}
+		}, [baseURL]
 	);
+
+	useEffect(() => {
+		// update the url to the new selected group
+		baseURL.current = `https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/${props.group}`
+		// exit if the map is not ready yet
+		if(updateRef.current == null || updateRef.current.view == null) {
+			return
+		}
+		var level = updateRef.current.view.zoom
+		// wait for slider to stop before re-render to new group
+		clearTimeout(updateRef.current.timer)
+		updateRef.current.timer = setTimeout(refresh_function(level), 200)
+	}, [props.group])
 
 	return <div className="webmap" id="viewDiv" ref={mapRef} />;
 }
 
 export default CurrentMap;
-
