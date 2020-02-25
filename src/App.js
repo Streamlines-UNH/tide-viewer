@@ -3,6 +3,7 @@ import './App.css';
 import CurrentStrength from './components/CurrentStrength';
 import CurrentMap from './components/Map';
 import RegionSelection from './components/RegionSelection';
+import {Helmet} from "react-helmet";
 import GroupSlider from './components/GroupSlider';
 
 
@@ -30,13 +31,19 @@ function App() {
   const changeGroupCallback = event => {
     setGroup(event)
   }
+  var groupRange = {min: 1, max:48}
+  var title = "Chesapeake Bay Operational Forecast System"
 
   return (
     <div className="App">
       <CurrentStrength />
       <CurrentMap regions={regions} group={group}/> 
       <RegionSelection regionSelectionCallBack={regionSelectionCallBack} />
-      <GroupSlider groupCallback={changeGroupCallback}/>
+      <GroupSlider range={groupRange} groupCallback={changeGroupCallback}/>
+      <Helmet>
+        <title>{title}</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
+      </Helmet>
     </div>
   );
 }
