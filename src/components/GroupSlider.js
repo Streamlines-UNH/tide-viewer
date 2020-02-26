@@ -3,20 +3,16 @@ import {makeStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import IconButton from '@material-ui/core/IconButton';
 import AddRoundedIcon from '@material-ui/icons/AddRounded';
 import RemoveRoundedIcon from '@material-ui/icons/RemoveRounded';
 
 const useStyles = makeStyles({
     root: {
-        width: 250,
+        width: 220,
         position: "absolute",
         bottom: 5,
-        right: 5,
-    },
-    input: {
-        width: 42,
+        right: 0,
     },
     button: {
         width: 30,
@@ -53,11 +49,13 @@ export default function GroupSlider(props) {
       <Typography id="input-slider" gutterBottom>
         Hour offset: {value}
       </Typography>
-      <Grid container spacing={2} alignItems="center">
-        <Grid item>
-          <AccessTimeIcon />
+      <Grid container alignItems="center">
+        <Grid item xs={2}>
+          <IconButton className={classes.button} onClick={handleMinusButton}>
+            <RemoveRoundedIcon/>
+          </IconButton>
         </Grid>
-        <Grid item xs>
+        <Grid item xs={6}>
           <Slider
             value={typeof value === 'number' ? value : 0}
             onChange={handleSliderChange}
@@ -67,12 +65,9 @@ export default function GroupSlider(props) {
             aria-labelledby="input-slider"
           />
         </Grid>
-        <Grid item>
+        <Grid item xs={3}>
           <IconButton className={classes.button} onClick={handleAddButton}>
             <AddRoundedIcon/>
-          </IconButton>
-          <IconButton className={classes.button} onClick={handleMinusButton}>
-            <RemoveRoundedIcon/>
           </IconButton>
         </Grid>
       </Grid>
