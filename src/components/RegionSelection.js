@@ -94,7 +94,7 @@ function RegionSelection(props) {
                 />
                 <FormControlLabel
                     control={
-                        <Checkbox checked={state.checkedRTOFSEAST} onChange={handleRegionChange('checkedROTFSEAST')} value="RTOFS_EAST"/>
+                        <Checkbox checked={state.checkedRTOFSEAST} onChange={handleRegionChange('checkedRTOFSEAST')} value="RTOFS_EAST"/>
                     }
                     label="RTOFS_EAST"
                 />

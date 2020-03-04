@@ -174,7 +174,31 @@ function CurrentMap(props) {
 
 	useEffect(() => {
 		// update the url to the new selected group
-		baseURL.current = `https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/${props.group}`
+		if ( props.regions.DBOFS ){
+			//console.log( "DBOFS" )
+			baseURL.current = `https://ncte6nriz3.execute-api.us-east-1.amazonaws.com/prod/api/DBOFS/${props.group}`
+		}
+		else if ( props.regions.CBOFS ) {
+			//console.log( "CBOFS" )
+			baseURL.current = `https://ncte6nriz3.execute-api.us-east-1.amazonaws.com/prod/api/CBOFS/${props.group}`
+		}
+		else if ( props.regions.NYOFS ) {
+			//console.log( "NYOFS" )
+			baseURL.current = `https://ncte6nriz3.execute-api.us-east-1.amazonaws.com/prod/api/NYOFS/${props.group}`
+		}
+		else if ( props.regions.NGOFS ) {
+			//console.log( "NGOFS" )
+			baseURL.current = `https://ncte6nriz3.execute-api.us-east-1.amazonaws.com/prod/api/NGOFS/${props.group}`
+		}
+		else if ( props.regions.RTOFS_EAST ) {
+			//console.log( "RTOFS_E" )
+			baseURL.current = `https://ncte6nriz3.execute-api.us-east-1.amazonaws.com/prod/api/RTOFS_EAST/${props.group}`
+		}
+		else if ( props.regions.RTOFS_WEST ) {
+			//console.log( "RTOFS_W" )
+			baseURL.current = `https://ncte6nriz3.execute-api.us-east-1.amazonaws.com/prod/api/RTOFS_WEST/${props.group}`
+		}
+
 		// exit if the map is not ready yet
 		if(updateRef.current == null || updateRef.current.view == null) {
 			return
@@ -183,7 +207,7 @@ function CurrentMap(props) {
 		// wait for slider to stop before re-render to new group
 		clearTimeout(updateRef.current.timer)
 		updateRef.current.timer = setTimeout(refresh_function(level), 200)
-	}, [props.group])
+	}, [props.group, props.regions])
 
 	return <div className="webmap" id="viewDiv" ref={mapRef} />;
 }
