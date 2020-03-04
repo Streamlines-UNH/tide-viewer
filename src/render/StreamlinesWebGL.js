@@ -320,6 +320,9 @@ export default function(watchUtils){
 				var graphic1 = graphics.items[i1];
 				var path1 = graphic1.geometry.paths[0];
 				var color = graphic1.attributes["color"];
+				while (path1.length > color.length) {
+					color.push([0,0,0])
+				}
 
 				// Initialize new triangulation state.
 				var s = {};
@@ -386,6 +389,11 @@ export default function(watchUtils){
 						floatData[vtxCursor * 7 + 3] = s.offset[1];
 						floatData[vtxCursor * 7 + 4] = s.distance;
 						floatData[vtxCursor * 7 + 5] = +1;
+						if (color[j] == undefined){
+							console.log(j)
+							console.log(path1)
+							console.log(color)
+						}
 						colorData[4 * (vtxCursor * 7 + 6) + 0] = color[j][0];
 						colorData[4 * (vtxCursor * 7 + 6) + 1] = color[j][1];
 						colorData[4 * (vtxCursor * 7 + 6) + 2] = color[j][2];

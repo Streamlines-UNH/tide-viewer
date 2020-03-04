@@ -2,12 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import { loadModules } from 'esri-loader';
 import GetTile from './../Utils'
 import StreamlinesGL from './../render/StreamlinesWebGL'
+import metadata from './../metadata'
 
 
 function CurrentMap(props) {
 	const mapRef = useRef();
 	// define the default view
-	var baseURL = useRef("https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/1")
+	var baseURL = useRef(`${metadata.AWS_URL}/CBOFS/tiles`)
 	// save data to this ref to access it between effects
 	var updateRef = useRef(null)
 
@@ -84,10 +85,8 @@ function CurrentMap(props) {
 							container: "viewDiv",
 							map: map,
 							center: [-75.5, 37.3],
-							zoom: 9
+							zoom: 5
 						});
-
-						map.layers.add(slLayer);
 
 						// callback function that will reset the layer on zoom/pan
 						function redraw(z) {
@@ -100,6 +99,7 @@ function CurrentMap(props) {
 										}
 									}
 								}
+								console.log(Object.keys(updateRef.current.zxyGraphics).length)
 								map.layers.remove(slLayer)
 								slLayer = new StreamlinesLayer({
 									graphics: g
@@ -119,6 +119,14 @@ function CurrentMap(props) {
 								Math.round(color1[2] * w1 + color2[2] * w2)];
 							return rgb;
 						}
+						var zoom_dic = {1:4, 2:4, 3:4, 4:4, 5:4, 6:4, 7:1, 8:1}
+						function zoom_drop(arr, z){
+							var g = []
+							for(var x = 0; x < arr.length; x+=zoom_dic[z]){
+								g.push(arr[x])
+							}
+							return g
+						}
 						updateRef.current.fetch = function(z, r, c) {
 							return function(err, result) {
 								if (err) return;
@@ -129,19 +137,26 @@ function CurrentMap(props) {
 										.split(',').map(parseFloat)
 										.map(color_from_mag)
 									// Redefine the lat/long to EPSG:4326 for use in the renderer
+									var paths = trip.geometry.coordinates
+									if (paths.length < 5) {
+										return null
+									}
+									if (z <= 6) {
+										paths = zoom_drop(paths, z)
+									}
 									return {
 										attributes: {
 											color: mags
 										},
 										geometry: webMercatorUtils.geographicToWebMercator({
-											paths: [trip.geometry.coordinates],
+											paths: [paths],
 											type: "polyline",
 											spatialReference: {
 												wkid: 4326
 											}
 										})
 									};
-								})
+								}).filter(x => x)
 								// after we are done fetching new tiles recompute the graphics layer
 								clearTimeout(graphicsTimer)
 								graphicsTimer = setTimeout(redraw(z), 200)
@@ -161,6 +176,8 @@ function CurrentMap(props) {
 							}, updateRef.current.fetch(z, r, c));
 							return openLayer.realFetchTile(z, r, c, op)
 						}
+						console.log(updateRef.current.view)
+						console.log(openLayer)
 
 						// return a deconstructor
 						return () => {
@@ -174,7 +191,7 @@ function CurrentMap(props) {
 
 	useEffect(() => {
 		// update the url to the new selected group
-		baseURL.current = `https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/${props.group}`
+		baseURL.current = `${metadata.AWS_URL}/CBOFS/tiles`
 		// exit if the map is not ready yet
 		if(updateRef.current == null || updateRef.current.view == null) {
 			return
