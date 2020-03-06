@@ -2,12 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import { loadModules } from 'esri-loader';
 import GetTile from './../Utils'
 import StreamlinesGL from './../render/StreamlinesWebGL'
+import config from './../config'
 
 
 function CurrentMap(props) {
 	const mapRef = useRef();
 	// define the default view
-	var baseURL = useRef("https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/1")
+	var baseURL = useRef(`${config.API_URL}/CBOFS/1`)
 	// save data to this ref to access it between effects
 	var updateRef = useRef(null)
 
@@ -174,7 +175,7 @@ function CurrentMap(props) {
 
 	useEffect(() => {
 		// update the url to the new selected group
-		baseURL.current = `https://p648saeyvc.execute-api.us-east-1.amazonaws.com/Prod/api/CBOFS/${props.group}`
+		baseURL.current = `${config.API_URL}/CBOFS/${props.group}`
 		// exit if the map is not ready yet
 		if(updateRef.current == null || updateRef.current.view == null) {
 			return
