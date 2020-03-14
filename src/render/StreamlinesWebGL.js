@@ -1,7 +1,7 @@
 import {mat3, vec2, vec3} from 'gl-matrix'
 
 
-export default function(watchUtils){
+export default function(watchUtils, freeze){
 	return {
 		// Locations of the two vertex attributes that we use. They
 		// will be bound to the shader program before linking.
@@ -73,14 +73,18 @@ export default function(watchUtils){
 				"  v_color = a_color;" +
 				"}";
 
+			var SPEED = "4000.0;"
+			if (freeze) {
+				SPEED = "0000.0;"
+			}
 			var fragmentSource =
 				"precision highp float;" +
 				"uniform float u_current_time;" +
 				"varying float v_distance;" +
 				"varying float v_side;" +
 				"varying vec4 v_color;" +
-				"const float TRAIL_SPEED = 4000.0;" +
-				"const float TRAIL_LENGTH = 1800.0;" +
+				"const float TRAIL_SPEED = " + SPEED +
+				"const float TRAIL_LENGTH = 5000.0;" +
 				"const float TRAIL_CYCLE = 4000.0;" +
 				"void main() {" +
 				"  float d = mod(v_distance - u_current_time * TRAIL_SPEED, TRAIL_CYCLE);" +
