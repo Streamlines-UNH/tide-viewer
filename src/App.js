@@ -5,6 +5,7 @@ import CurrentMap from './components/Map';
 import RegionSelection from './components/RegionSelection';
 import {Helmet} from "react-helmet";
 import GroupSlider from './components/GroupSlider';
+import PauseButton from './components/PauseButton';
 
 
 function App() {
@@ -34,12 +35,19 @@ function App() {
   var groupRange = {min: 1, max:48}
   var title = "Chesapeake Bay Operational Forecast System"
 
+  const [pause, setPause] = useState(false)
+  const pauseCallback = event => {
+    console.log(event)
+    setPause(event)
+  }
+
   return (
     <div className="App">
       <CurrentStrength />
-      <CurrentMap regions={regions} group={group}/> 
+      <CurrentMap regions={regions} pause={pause} group={group}/> 
       <RegionSelection regionSelectionCallBack={regionSelectionCallBack} />
       <GroupSlider range={groupRange} groupCallback={changeGroupCallback}/>
+      <PauseButton pauseCallback={pauseCallback}/>
       <Helmet>
         <title>{title}</title>
         <meta name="viewport" content="width=device-width, user-scalable=no" />

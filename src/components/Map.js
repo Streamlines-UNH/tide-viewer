@@ -55,7 +55,7 @@ function CurrentMap(props) {
 					OpenStreetMapLayer]) => {
 
 						// This will init the WebGL graphics
-						var CustomLayerView2D = BaseLayerViewGL2D.createSubclass(StreamlinesGL(watchUtils));
+						var CustomLayerView2D = BaseLayerViewGL2D.createSubclass(StreamlinesGL(watchUtils, props.pause));
 
 						// Subclass the layer view from GraphicsLayer, to take advantage of its
 						// watchable graphics property.
@@ -153,6 +153,9 @@ function CurrentMap(props) {
 						// then return the saved function from earlier
 
 						openLayer.fetchTile = function(z, r, c, op) {
+							if (z > 9) {
+								return openLayer.realFetchTile(z, r, c, op)
+							}
 							var url = `${baseURL.current}/${z}/${c}/${r}`
 							GetTile({
 								uri: url,
@@ -170,7 +173,7 @@ function CurrentMap(props) {
 							}
 						};
 					});
-		}, [baseURL]
+		}, [baseURL, props.pause]
 	);
 
 	useEffect(() => {
