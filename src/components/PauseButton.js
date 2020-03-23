@@ -6,10 +6,10 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 
 const useStyles = makeStyles({
     root: {
-        width: 100,
+        width: 50,
         position: "absolute",
-        bottom: 5,
-        left: 20,
+        top: 55,
+        right: 14,
     },
     button: {
         backgroundColor: '#3f51b5',
