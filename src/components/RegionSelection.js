@@ -57,7 +57,6 @@ function RegionSelection(props) {
           onKeyDown={toggleDrawer(side, false)}
         >
             <FormControl component="fieldset">
-              <FormLabel component="legend">Gender</FormLabel>
               <RadioGroup aria-label="Region" name="region" value={state.selected} onChange={handleRegionChange}>
                 <FormControlLabel value="CBOFS" control={<Radio />} label="CBOFS" />
                 <FormControlLabel value="DBOFS" control={<Radio />} label="DBOFS" />
