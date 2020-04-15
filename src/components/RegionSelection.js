@@ -2,10 +2,13 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
+import Radio from '@material-ui/core/Radio';
 import Divider from '@material-ui/core/Divider';
-import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControl from '@material-ui/core/FormControl';
+
 
 const useStyles = makeStyles({
     list: {
@@ -29,35 +32,21 @@ function RegionSelection(props) {
         left: false,
         bottom: false,
         right: false,
-        checkedCBOFS: true,
-        checkedDBOFS: false,
-        checkedNYOFS: false,
-        checkedNGOFS: false,
-        checkedRTOFSEAST: false,
-        checkedRTOFSWEST: false,
+        selected: "CBOFS"
     });
 
     const toggleDrawer = (side, open) => event => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
           return;
         }
-    
         setState({ ...state, [side]: open });
-
-        if (!open) {
-            props.regionSelectionCallBack({
-                "CBOFS": state.checkedCBOFS,
-                "DBOFS": state.checkedDBOFS,
-                "NYOFS": state.checkedNYOFS,
-                "NGOFS": state.checkedNGOFS,
-                "RTOFS_EAST": state.checkedRTOFSEAST,
-                "RTOFS_WEST": state.checkedRTOFSWEST
-            });
-        }
     };
 
-    const handleRegionChange = name => event => {
-        setState({ ...state, [name]: event.target.checked });
+    const handleRegionChange = (event, newValue) => {
+        props.regionSelectionCallBack(
+            newValue
+        );
+        setState({selected: newValue})
     };
 
     const sideList = side => (
@@ -67,44 +56,17 @@ function RegionSelection(props) {
           onClick={toggleDrawer(side, false)}
           onKeyDown={toggleDrawer(side, false)}
         >
-          <FormGroup>
-              <FormControlLabel
-                control={
-                    <Checkbox checked={state.checkedCBOFS} onChange={handleRegionChange('checkedCBOFS')} value="CBOFS"/>
-                }
-                label="CBOFS"
-                />
-                <FormControlLabel
-                    control={
-                        <Checkbox checked={state.checkedDBOFS} onChange={handleRegionChange('checkedDBOFS')} value="DBOFS"/>
-                    }
-                    label="DBOFS"
-                />
-                <FormControlLabel
-                    control={
-                        <Checkbox checked={state.checkedNGOFS} onChange={handleRegionChange('checkedNGOFS')} value="NGOFS"/>
-                    }
-                    label="NGOFS"
-                />
-                <FormControlLabel
-                    control={
-                        <Checkbox checked={state.checkedNYOFS} onChange={handleRegionChange('checkedNYOFS')} value="NYOFS"/>
-                    }
-                    label="NYOFS"
-                />
-                <FormControlLabel
-                    control={
-                        <Checkbox checked={state.checkedRTOFSEAST} onChange={handleRegionChange('checkedROTFSEAST')} value="RTOFS_EAST"/>
-                    }
-                    label="RTOFS_EAST"
-                />
-                <FormControlLabel
-                    control={
-                        <Checkbox checked={state.checkedRTOFSWEST} onChange={handleRegionChange('checkedRTOFSWEST')} value="RTOFS_WEST"/>
-                    }
-                    label="RTOFS_WEAST"
-                />
-          </FormGroup>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Gender</FormLabel>
+              <RadioGroup aria-label="Region" name="region" value={state.selected} onChange={handleRegionChange}>
+                <FormControlLabel value="CBOFS" control={<Radio />} label="CBOFS" />
+                <FormControlLabel value="DBOFS" control={<Radio />} label="DBOFS" />
+                <FormControlLabel value="NGOFS" control={<Radio />} label="NGOFS" />
+                <FormControlLabel value="NYOFS" control={<Radio />} label="NYOFS" />
+                <FormControlLabel value="RTOFS_EAST" control={<Radio />} label="RTOFS EAST" />
+                <FormControlLabel value="RTOFS_WEST" control={<Radio />} label="RTOFS WEST" />
+              </RadioGroup>
+            </FormControl>
           <Divider />
         </div>
     );

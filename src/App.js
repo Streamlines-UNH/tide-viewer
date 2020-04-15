@@ -9,23 +9,11 @@ import PauseButton from './components/PauseButton';
 
 
 function App() {
-  const [regions, setRegions] = useState({
-      "CBOFS": true,
-      "DBOFS": false,
-      "NYOFS": false,
-      "NGOFS": false,
-      "RTOFS_EAST": false,
-      "RTOFS_WEST": false,
-  });
+  const [region, setRegion] = useState("CBOFS");
   const regionSelectionCallBack = (regionSelectionData) => {
-    setRegions({
-      "CBOFS": regionSelectionData.CBOFS,
-      "DBOFS": regionSelectionData.DBOFS,
-      "NYOFS": regionSelectionData.NYOFS,
-      "NGOFS": regionSelectionData.NGOFS,
-      "RTOFS_EAST": regionSelectionData.RTOFS_EAST,
-      "RTOFS_WEST": regionSelectionData.RTOFS_WEST
-    });
+    setRegion(
+      regionSelectionData,
+    );
   }
 
   const [group, setGroup] = useState(1)
@@ -44,7 +32,7 @@ function App() {
   return (
     <div className="App">
       <CurrentStrength />
-      <CurrentMap regions={regions} pause={pause} group={group}/> 
+      <CurrentMap region={region} pause={pause} group={group}/> 
       <RegionSelection regionSelectionCallBack={regionSelectionCallBack} />
       <GroupSlider range={groupRange} groupCallback={changeGroupCallback}/>
       <PauseButton pauseCallback={pauseCallback}/>

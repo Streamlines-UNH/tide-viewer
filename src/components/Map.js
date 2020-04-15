@@ -122,7 +122,10 @@ function CurrentMap(props) {
 						}
 						updateRef.current.fetch = function(z, r, c) {
 							return function(err, result) {
-								if (err) return;
+								if (err) {
+									updateRef.current.zxyGraphics[`${z}/${c}/${r}`] = {}
+									return
+								}
 								// modify the geojson to something the renderer can use
 								updateRef.current.zxyGraphics[`${z}/${c}/${r}`] = result.features.map(function(trip) {
 									// remap the magnitudes to a color value between color1 and color2
@@ -178,7 +181,8 @@ function CurrentMap(props) {
 
 	useEffect(() => {
 		// update the url to the new selected group
-		baseURL.current = `${config.API_URL}/CBOFS/${props.group}`
+		console.log(props.group)
+		baseURL.current = `${config.API_URL}/${props.region}/${props.group}`
 		// exit if the map is not ready yet
 		if(updateRef.current == null || updateRef.current.view == null) {
 			return
@@ -187,7 +191,7 @@ function CurrentMap(props) {
 		// wait for slider to stop before re-render to new group
 		clearTimeout(updateRef.current.timer)
 		updateRef.current.timer = setTimeout(refresh_function(level), 200)
-	}, [props.group])
+	}, [props.group, props.region])
 
 	return <div className="webmap" id="viewDiv" ref={mapRef} />;
 }
