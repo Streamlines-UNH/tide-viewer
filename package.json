@@ -8,7 +8,7 @@
     "@material-ui/core": "4.6.1",
     "@material-ui/icons": "4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.45",
-    "aws-amplify": "^2.2.2",
+    "aws-amplify": "^5.0.4",
     "axios": "^0.21.2",
     "esri-loader": "^2.13.0",
     "gl-matrix": "^3.2.1",
