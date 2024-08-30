@@ -9,7 +9,7 @@
     "@material-ui/icons": "4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.45",
     "aws-amplify": "^5.3.19",
-    "axios": "^1.6.0",
+    "axios": "^1.7.5",
     "esri-loader": "^2.13.0",
     "gl-matrix": "^3.2.1",
     "node-sass": "^7.0.3",
